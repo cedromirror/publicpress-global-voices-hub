@@ -47,10 +47,13 @@ const features = [
 
 const FeaturesList = () => {
   return (
-    <section className="py-16 md:py-24 bg-white">
+    <section className="py-20 md:py-28 bg-gradient-to-b from-white to-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 font-playfair">
+          <span className="inline-block px-4 py-1 bg-pp-blue/10 text-pp-blue rounded-full text-sm font-medium mb-4">
+            Platform Features
+          </span>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 font-playfair">
             Powerful Tools for Modern Journalism
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -62,15 +65,27 @@ const FeaturesList = () => {
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="bg-white p-6 rounded-lg border border-gray-100 shadow-card hover:shadow-hover transition-shadow"
+              className="bg-white p-8 rounded-xl border border-gray-100 shadow-card hover:shadow-hover transition-shadow transform hover:-translate-y-1 transition-transform duration-300"
             >
-              <div className="bg-pp-blue/10 p-3 rounded-full inline-block mb-4">
+              <div className="bg-pp-blue/10 p-4 rounded-xl inline-block mb-5">
                 {feature.icon}
               </div>
-              <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
+              <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
               <p className="text-muted-foreground">{feature.description}</p>
             </div>
           ))}
+        </div>
+        
+        <div className="mt-16 text-center">
+          <a 
+            href="#" 
+            className="inline-flex items-center text-pp-blue font-medium hover:text-pp-navy transition-colors"
+          >
+            Explore all features
+            <svg className="ml-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </a>
         </div>
       </div>
     </section>
