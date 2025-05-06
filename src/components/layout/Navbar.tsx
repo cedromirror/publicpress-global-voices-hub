@@ -1,14 +1,21 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Globe, Menu, X } from "lucide-react";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
+  };
+
+  const isActive = (path: string) => {
+    return location.pathname === path 
+      ? "text-pp-blue font-medium" 
+      : "text-foreground hover:text-pp-blue transition-colors";
   };
 
   return (
@@ -23,28 +30,32 @@ const Navbar = () => {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-foreground hover:text-pp-blue transition-colors">
+          <Link to="/" className={isActive("/")}>
             Home
           </Link>
-          <Link to="/stories" className="text-foreground hover:text-pp-blue transition-colors">
+          <Link to="/stories" className={isActive("/stories")}>
             Stories
           </Link>
-          <Link to="/journalists" className="text-foreground hover:text-pp-blue transition-colors">
+          <Link to="/journalists" className={isActive("/journalists")}>
             Journalists
           </Link>
-          <Link to="/about" className="text-foreground hover:text-pp-blue transition-colors">
+          <Link to="/about" className={isActive("/about")}>
             About
           </Link>
         </div>
 
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="outline" size="sm">
-            Log In
-          </Button>
-          <Button size="sm">
-            Sign Up
-          </Button>
+          <Link to="/login">
+            <Button variant="outline" size="sm">
+              Log In
+            </Button>
+          </Link>
+          <Link to="/signup">
+            <Button size="sm">
+              Sign Up
+            </Button>
+          </Link>
         </div>
 
         {/* Mobile Toggle */}
@@ -62,39 +73,43 @@ const Navbar = () => {
         <div className="md:hidden absolute top-full left-0 right-0 bg-white shadow-md py-4 px-6 flex flex-col gap-4 animate-fade-in">
           <Link 
             to="/" 
-            className="text-foreground hover:text-pp-blue transition-colors py-2"
+            className={`${isActive("/")} py-2`}
             onClick={toggleMenu}
           >
             Home
           </Link>
           <Link 
             to="/stories" 
-            className="text-foreground hover:text-pp-blue transition-colors py-2"
+            className={`${isActive("/stories")} py-2`}
             onClick={toggleMenu}
           >
             Stories
           </Link>
           <Link 
             to="/journalists" 
-            className="text-foreground hover:text-pp-blue transition-colors py-2"
+            className={`${isActive("/journalists")} py-2`}
             onClick={toggleMenu}
           >
             Journalists
           </Link>
           <Link 
             to="/about" 
-            className="text-foreground hover:text-pp-blue transition-colors py-2"
+            className={`${isActive("/about")} py-2`}
             onClick={toggleMenu}
           >
             About
           </Link>
           <div className="flex flex-col gap-2 mt-2">
-            <Button variant="outline" className="w-full">
-              Log In
-            </Button>
-            <Button className="w-full">
-              Sign Up
-            </Button>
+            <Link to="/login" onClick={toggleMenu}>
+              <Button variant="outline" className="w-full">
+                Log In
+              </Button>
+            </Link>
+            <Link to="/signup" onClick={toggleMenu}>
+              <Button className="w-full">
+                Sign Up
+              </Button>
+            </Link>
           </div>
         </div>
       )}
