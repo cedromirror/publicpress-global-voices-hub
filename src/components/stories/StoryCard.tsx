@@ -10,7 +10,7 @@ import {
   Globe,
   Clock,
   Calendar,
-  Heart
+  Bookmark
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -54,6 +54,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
   const [dislikes, setDislikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
   const [hasDisliked, setHasDisliked] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
   
   const handleLike = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -105,6 +106,19 @@ const StoryCard: React.FC<StoryCardProps> = ({
         description: "You've disliked this story",
       });
     }
+  };
+
+  const handleSaveForLater = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    setIsSaved(!isSaved);
+    toast({
+      title: isSaved ? "Removed from reading list" : "Saved for later",
+      description: isSaved 
+        ? "This story has been removed from your reading list" 
+        : "This story has been saved to your reading list for later",
+    });
   };
 
   return (
@@ -193,6 +207,12 @@ const StoryCard: React.FC<StoryCardProps> = ({
               <MessageCircle className="h-4 w-4" />
               {commentsCount}
             </span>
+            <button
+              onClick={handleSaveForLater}
+              className={`flex items-center gap-1 hover:text-amber-500 transition-colors ${isSaved ? 'text-amber-500' : ''}`}
+            >
+              <Bookmark className="h-4 w-4" fill={isSaved ? "currentColor" : "none"} />
+            </button>
           </div>
           <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full text-xs font-medium">
             <Eye className="h-3 w-3 text-pp-blue" />

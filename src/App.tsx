@@ -13,6 +13,7 @@ import Stories from "./pages/Stories";
 import StoryDetail from "./pages/StoryDetail";
 import Journalists from "./pages/Journalists";
 import JournalistDetail from "./pages/JournalistDetail";
+import ReadingList from "./pages/ReadingList";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/stories/:id" element={<StoryDetail />} />
           <Route path="/journalists" element={<Journalists />} />
           <Route path="/journalists/:id" element={<JournalistDetail />} />
+          <Route path="/reading-list" element={<ReadingList />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

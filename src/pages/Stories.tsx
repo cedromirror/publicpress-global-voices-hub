@@ -9,21 +9,62 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { featuredStories, regions, topCategories } from '@/lib/data';
-import { Filter, Search } from 'lucide-react';
+import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Stories = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeRegion, setActiveRegion] = useState('All');
   const [activeCategory, setActiveCategory] = useState('All');
+  const [sortBy, setSortBy] = useState<string>("popular"); // popular, newest, mostCommented
+  const [isAscending, setIsAscending] = useState(false);
   
-  const filteredStories = featuredStories.filter(story => {
+  // Sort stories based on current sorting options
+  const sortStories = (stories: any[]) => {
+    let sortedStories;
+    
+    if (sortBy === "newest") {
+      sortedStories = [...stories].sort((a, b) => {
+        const dateA = new Date(a.publishedAt);
+        const dateB = new Date(b.publishedAt);
+        return isAscending 
+          ? dateA.getTime() - dateB.getTime() 
+          : dateB.getTime() - dateA.getTime();
+      });
+    } else if (sortBy === "mostCommented") {
+      sortedStories = [...stories].sort((a, b) => 
+        isAscending ? a.commentsCount - b.commentsCount : b.commentsCount - a.commentsCount
+      );
+    } else {
+      // Default: popular - sort by views
+      sortedStories = [...stories].sort((a, b) => 
+        isAscending ? a.viewsCount - b.viewsCount : b.viewsCount - a.viewsCount
+      );
+    }
+    
+    return sortedStories;
+  };
+  
+  const filteredStories = sortStories(featuredStories.filter(story => {
     const matchesSearch = story.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           story.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRegion = activeRegion === 'All' || story.region === activeRegion;
     const matchesCategory = activeCategory === 'All' || story.category === activeCategory;
     
     return matchesSearch && matchesRegion && matchesCategory;
-  });
+  }));
 
   return (
     <>
@@ -49,13 +90,85 @@ const Stories = () => {
                 />
               </div>
               
-              <div className="flex items-center gap-2 w-full md:w-auto">
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <Filter className="h-4 w-4" />
-                  Filter
+              <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="flex items-center gap-2 whitespace-nowrap">
+                      <Filter className="h-4 w-4" />
+                      Filters
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-[220px]">
+                    <div className="p-2">
+                      <p className="text-sm font-medium mb-2">Sort by</p>
+                      <Select
+                        value={sortBy}
+                        onValueChange={setSortBy}
+                      >
+                        <SelectTrigger className="w-full mb-2">
+                          <SelectValue placeholder="Sort by" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="popular">
+                            <div className="flex items-center">
+                              <TrendingUp className="mr-2 h-4 w-4" />
+                              <span>Popular</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="newest">
+                            <div className="flex items-center">
+                              <Calendar className="mr-2 h-4 w-4" />
+                              <span>Newest</span>
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="mostCommented">
+                            <div className="flex items-center">
+                              <MessageCircle className="mr-2 h-4 w-4" />
+                              <span>Most Commented</span>
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                      
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        onClick={() => setIsAscending(!isAscending)} 
+                        className="w-full justify-start"
+                      >
+                        {isAscending ? (
+                          <><SortAsc className="mr-2 h-4 w-4" /> Ascending</>
+                        ) : (
+                          <><SortDesc className="mr-2 h-4 w-4" /> Descending</>
+                        )}
+                      </Button>
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm('');
+                    setActiveRegion('All');
+                    setActiveCategory('All');
+                    setSortBy('popular');
+                    setIsAscending(false);
+                  }}
+                >
+                  Reset Filters
                 </Button>
-                <Button variant="default" size="sm">
-                  Latest
+                
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex items-center gap-1"
+                >
+                  {sortBy === "popular" && <TrendingUp className="h-4 w-4" />}
+                  {sortBy === "newest" && <Calendar className="h-4 w-4" />}
+                  {sortBy === "mostCommented" && <MessageCircle className="h-4 w-4" />}
+                  {sortBy === "popular" ? "Popular" : sortBy === "newest" ? "Newest" : "Most Commented"}
                 </Button>
               </div>
             </div>
@@ -106,6 +219,12 @@ const Stories = () => {
                 </div>
               </TabsContent>
             </Tabs>
+            
+            <div className="flex justify-between items-center text-sm text-muted-foreground">
+              <span>
+                {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'} found
+              </span>
+            </div>
           </div>
           
           {filteredStories.length > 0 ? (
