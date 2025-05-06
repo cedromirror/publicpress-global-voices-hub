@@ -1,5 +1,6 @@
 
-import React from 'react';
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import Hero from '@/components/home/Hero';
@@ -13,6 +14,19 @@ import { Badge } from '@/components/ui/badge';
 import { ChevronRight } from 'lucide-react';
 
 const Index = () => {
+  const [activeCategory, setActiveCategory] = useState<string>("All");
+  
+  // Get top featured stories for the main display
+  const topFeaturedStories = featuredStories
+    .sort((a, b) => b.viewsCount - a.viewsCount)
+    .slice(0, 6)
+    .map(story => ({...story, featured: true}));
+    
+  // Filter stories based on the selected category
+  const displayedStories = activeCategory === "All" 
+    ? topFeaturedStories
+    : topFeaturedStories.filter(story => story.category === activeCategory);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -27,31 +41,56 @@ const Index = () => {
                 <h2 className="text-3xl font-bold mb-2 font-playfair">Featured Stories</h2>
                 <p className="text-muted-foreground">The latest and most impactful journalism from around the world</p>
               </div>
-              <Button variant="outline" className="hidden md:flex items-center">
-                View All Stories <ChevronRight className="ml-1 h-4 w-4" />
-              </Button>
+              <Link to="/stories">
+                <Button variant="outline" className="hidden md:flex items-center">
+                  View All Stories <ChevronRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
             
             <div className="mb-8 flex flex-wrap gap-2">
-              <Badge className="bg-pp-navy hover:bg-pp-navy/90 text-white">All</Badge>
+              <Badge 
+                className={`cursor-pointer ${activeCategory === 'All' ? 'bg-pp-navy hover:bg-pp-navy/90 text-white' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                onClick={() => setActiveCategory('All')}
+              >
+                All
+              </Badge>
               {topCategories.slice(0, 7).map((category) => (
-                <Badge key={category} variant="outline" className="hover:bg-muted">
+                <Badge 
+                  key={category}
+                  className={`cursor-pointer ${activeCategory === category ? 'bg-pp-navy hover:bg-pp-navy/90 text-white' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                  onClick={() => setActiveCategory(category)}
+                >
                   {category}
                 </Badge>
               ))}
-              <Badge variant="outline" className="hover:bg-muted">More...</Badge>
+              <Link to="/stories">
+                <Badge variant="outline" className="hover:bg-muted">More...</Badge>
+              </Link>
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredStories.map((story) => (
-                <StoryCard key={story.id} {...story} />
-              ))}
+              {displayedStories.length > 0 ? (
+                displayedStories.map((story) => (
+                  <StoryCard 
+                    key={story.id} 
+                    {...story} 
+                    featured={story.featured}
+                  />
+                ))
+              ) : (
+                <div className="col-span-3 text-center py-10">
+                  <p className="text-muted-foreground">No stories found for this category.</p>
+                </div>
+              )}
             </div>
             
             <div className="mt-8 text-center md:hidden">
-              <Button variant="outline" className="w-full">
-                View All Stories
-              </Button>
+              <Link to="/stories">
+                <Button variant="outline" className="w-full">
+                  View All Stories
+                </Button>
+              </Link>
             </div>
           </div>
         </section>

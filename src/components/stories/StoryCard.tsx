@@ -1,15 +1,18 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { 
   MessageCircle, 
-  ThumbsUp, 
+  ThumbsUp,
+  ThumbsDown,
   Eye, 
   Globe,
   Clock,
-  Calendar
+  Calendar,
+  Heart
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export interface StoryCardProps {
   id: string;
@@ -28,6 +31,7 @@ export interface StoryCardProps {
   commentsCount: number;
   likesCount: number;
   viewsCount: number;
+  featured?: boolean;
 }
 
 const StoryCard: React.FC<StoryCardProps> = ({
@@ -42,10 +46,69 @@ const StoryCard: React.FC<StoryCardProps> = ({
   readTime,
   commentsCount,
   likesCount,
-  viewsCount
+  viewsCount,
+  featured = false
 }) => {
+  const { toast } = useToast();
+  const [likes, setLikes] = useState(likesCount);
+  const [dislikes, setDislikes] = useState(0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [hasDisliked, setHasDisliked] = useState(false);
+  
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (hasLiked) {
+      setLikes(likes - 1);
+      setHasLiked(false);
+      toast({
+        title: "Like removed",
+        description: "You've removed your like from this story",
+      });
+    } else {
+      setLikes(likes + 1);
+      setHasLiked(true);
+      // If user previously disliked, remove the dislike
+      if (hasDisliked) {
+        setDislikes(dislikes - 1);
+        setHasDisliked(false);
+      }
+      toast({
+        title: "Story liked",
+        description: "You've liked this story!",
+      });
+    }
+  };
+  
+  const handleDislike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    if (hasDisliked) {
+      setDislikes(dislikes - 1);
+      setHasDisliked(false);
+      toast({
+        title: "Dislike removed",
+        description: "You've removed your dislike from this story",
+      });
+    } else {
+      setDislikes(dislikes + 1);
+      setHasDisliked(true);
+      // If user previously liked, remove the like
+      if (hasLiked) {
+        setLikes(likes - 1);
+        setHasLiked(false);
+      }
+      toast({
+        title: "Story disliked",
+        description: "You've disliked this story",
+      });
+    }
+  };
+
   return (
-    <div className="story-card bg-white rounded-lg shadow-card overflow-hidden border border-gray-100 h-full flex flex-col">
+    <div className={`story-card bg-white rounded-lg shadow-card overflow-hidden border border-gray-100 h-full flex flex-col ${featured ? 'border-pp-blue/30 shadow-lg' : ''}`}>
       <Link to={`/stories/${id}`} className="block">
         <div className="relative h-52 overflow-hidden">
           <img 
@@ -57,6 +120,11 @@ const StoryCard: React.FC<StoryCardProps> = ({
             <Badge className="bg-pp-blue hover:bg-pp-blue/90">
               {category}
             </Badge>
+            {featured && (
+              <Badge className="bg-amber-500 hover:bg-amber-600">
+                Featured
+              </Badge>
+            )}
           </div>
           <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
             <div className="flex items-center gap-2">
@@ -107,10 +175,20 @@ const StoryCard: React.FC<StoryCardProps> = ({
         
         <div className="flex items-center justify-between text-sm text-muted-foreground pt-4 border-t border-gray-100 mt-auto">
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1">
+            <button 
+              onClick={handleLike}
+              className={`flex items-center gap-1 hover:text-pp-blue transition-colors ${hasLiked ? 'text-pp-blue' : ''}`}
+            >
               <ThumbsUp className="h-4 w-4" />
-              {likesCount}
-            </span>
+              {likes}
+            </button>
+            <button 
+              onClick={handleDislike}
+              className={`flex items-center gap-1 hover:text-red-500 transition-colors ${hasDisliked ? 'text-red-500' : ''}`}
+            >
+              <ThumbsDown className="h-4 w-4" />
+              {dislikes}
+            </button>
             <span className="flex items-center gap-1">
               <MessageCircle className="h-4 w-4" />
               {commentsCount}
