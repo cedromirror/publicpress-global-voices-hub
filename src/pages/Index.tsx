@@ -11,7 +11,7 @@ import StoryCard from '@/components/stories/StoryCard';
 import { Button } from '@/components/ui/button';
 import { featuredStories, topCategories } from '@/lib/data';
 import { Badge } from '@/components/ui/badge';
-import { ChevronRight, Flame, TrendingUp, Clock } from 'lucide-react';
+import { ChevronRight, Flame, TrendingUp, Clock, Eye, MessageCircle } from 'lucide-react';
 import { 
   DropdownMenu,
   DropdownMenuContent,
