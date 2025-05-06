@@ -3,12 +3,12 @@ import React from 'react';
 import { 
   Image, 
   Video, 
-  Map, 
-  Timeline, 
+  MapPin, 
+  BarChart2, 
   Globe, 
   UserCheck, 
   MessageCircle, 
-  Translate, 
+  Languages, 
   BadgeCheck
 } from "lucide-react";
 
@@ -29,7 +29,7 @@ const features = [
     description: "Connect directly with readers through comments, polls, Q&As, and live events."
   },
   {
-    icon: <Translate className="h-6 w-6 text-pp-blue" />,
+    icon: <Languages className="h-6 w-6 text-pp-blue" />,
     title: "Global Reach",
     description: "Translate stories to multiple languages and target specific regional audiences."
   },
@@ -39,7 +39,7 @@ const features = [
     description: "Build credibility with transparent sourcing, verification badges, and trust metrics."
   },
   {
-    icon: <Timeline className="h-6 w-6 text-pp-blue" />,
+    icon: <BarChart2 className="h-6 w-6 text-pp-blue" />,
     title: "Analytics & Insights",
     description: "Access detailed performance metrics to understand your audience and optimize content."
   }
