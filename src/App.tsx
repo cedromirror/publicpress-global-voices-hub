@@ -15,6 +15,7 @@ import Journalists from "./pages/Journalists";
 import JournalistDetail from "./pages/JournalistDetail";
 import ReadingList from "./pages/ReadingList";
 import About from "./pages/About";
+import JournalistDashboard from "./pages/JournalistDashboard";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/journalists/:id" element={<JournalistDetail />} />
           <Route path="/reading-list" element={<ReadingList />} />
           <Route path="/about" element={<About />} />
+          <Route path="/journalist-dashboard/*" element={<JournalistDashboard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

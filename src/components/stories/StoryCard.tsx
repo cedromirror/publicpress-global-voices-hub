@@ -123,42 +123,40 @@ const StoryCard: React.FC<StoryCardProps> = ({
 
   return (
     <div className={`story-card bg-white rounded-lg shadow-card overflow-hidden border border-gray-100 h-full flex flex-col ${featured ? 'border-pp-blue/30 shadow-lg' : ''}`}>
-      <Link to={`/stories/${id}`} className="block">
-        <div className="relative h-52 overflow-hidden">
-          <img 
-            src={coverImage} 
-            alt={title} 
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
-          />
-          <div className="absolute top-4 left-4 flex gap-2">
-            <Badge className="bg-pp-blue hover:bg-pp-blue/90">
-              {category}
+      <div className="relative h-52 overflow-hidden">
+        <img 
+          src={coverImage} 
+          alt={title} 
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105" 
+        />
+        <div className="absolute top-4 left-4 flex gap-2">
+          <Badge className="bg-pp-blue hover:bg-pp-blue/90">
+            {category}
+          </Badge>
+          {featured && (
+            <Badge className="bg-amber-500 hover:bg-amber-600">
+              Featured
             </Badge>
-            {featured && (
-              <Badge className="bg-amber-500 hover:bg-amber-600">
-                Featured
-              </Badge>
-            )}
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-pp-blue text-xs font-bold overflow-hidden border-2 border-pp-blue">
-                {author.avatar ? (
-                  <img src={author.avatar} alt={author.name} className="w-full h-full object-cover" />
-                ) : (
-                  author.name.substring(0, 2).toUpperCase()
-                )}
-              </div>
-              <span className="text-white text-sm font-medium">
-                {author.name}
-                {author.verified && (
-                  <span className="ml-1 text-xs bg-pp-blue text-white px-1 py-0.5 rounded-sm">✓</span>
-                )}
-              </span>
+          )}
+        </div>
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-4">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center text-pp-blue text-xs font-bold overflow-hidden border-2 border-pp-blue">
+              {author.avatar ? (
+                <img src={author.avatar} alt={author.name} className="w-full h-full object-cover" />
+              ) : (
+                author.name.substring(0, 2).toUpperCase()
+              )}
             </div>
+            <span className="text-white text-sm font-medium">
+              {author.name}
+              {author.verified && (
+                <span className="ml-1 text-xs bg-pp-blue text-white px-1 py-0.5 rounded-sm">✓</span>
+              )}
+            </span>
           </div>
         </div>
-      </Link>
+      </div>
       
       <div className="p-5 flex flex-col flex-grow">
         <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">

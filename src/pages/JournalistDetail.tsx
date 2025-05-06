@@ -23,12 +23,16 @@ import {
   Award,
   Twitter,
   Linkedin,
-  ChevronRight
+  ChevronRight,
+  CheckCircle,
+  Shield,
+  TrendingUp,
+  Clock
 } from 'lucide-react';
 import { journalists, featuredStories } from '@/lib/data';
-import StoryCard from '@/components/stories/StoryCard';
-import { useToast } from '@/components/ui/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const JournalistDetail = () => {
   const { id } = useParams();
@@ -60,6 +64,20 @@ const JournalistDetail = () => {
       title: "Shared",
       description: `${journalist?.name}'s profile link has been copied to clipboard`,
     });
+  };
+  
+  const getVerificationBadgeColor = () => {
+    if (!journalist?.verified) return "bg-gray-100 text-gray-600";
+    if (journalist?.verificationLevel === "platinum") return "bg-gradient-to-r from-purple-500 to-indigo-500 text-white";
+    if (journalist?.verificationLevel === "gold") return "bg-amber-500 text-white";
+    return "bg-pp-blue text-white";
+  };
+  
+  const getVerificationTooltip = () => {
+    if (!journalist?.verified) return "Not verified";
+    if (journalist?.verificationLevel === "platinum") return "Platinum Verified - Top 1% journalist";
+    if (journalist?.verificationLevel === "gold") return "Gold Verified - Established journalist";
+    return "Verified Journalist";
   };
 
   if (!journalist) {
@@ -97,22 +115,53 @@ const JournalistDetail = () => {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
               <div className="absolute bottom-0 left-0 right-0 p-6 text-white flex flex-col sm:flex-row sm:items-end gap-4">
-                <Avatar className="h-24 w-24 border-4 border-white shadow-lg bg-white">
-                  <AvatarImage src={journalist.avatar} alt={journalist.name} />
-                  <AvatarFallback className="bg-pp-blue/20 text-pp-blue text-xl font-medium">
-                    {journalist.name.split(' ').map(n => n[0]).join('')}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="h-24 w-24 border-4 border-white shadow-lg bg-white">
+                    <AvatarImage src={journalist.avatar} alt={journalist.name} />
+                    <AvatarFallback className="bg-pp-blue/20 text-pp-blue text-xl font-medium">
+                      {journalist.name.split(' ').map(n => n[0]).join('')}
+                    </AvatarFallback>
+                  </Avatar>
+                  
+                  {journalist.verified && (
+                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+                      <CheckCircle className="h-7 w-7 text-pp-blue" fill="white" />
+                    </div>
+                  )}
+                </div>
+                
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-2 mb-1">
-                    {journalist.verified && (
-                      <Badge className="bg-pp-blue hover:bg-pp-blue/90">
-                        <Award className="h-3 w-3 mr-1" /> Verified
-                      </Badge>
-                    )}
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge className={`flex items-center gap-1 ${getVerificationBadgeColor()}`}>
+                            {journalist.verified ? (
+                              <>
+                                <Award className="h-3 w-3 mr-1" /> 
+                                Verified {journalist.verificationLevel && journalist.verificationLevel.charAt(0).toUpperCase() + journalist.verificationLevel.slice(1)}
+                              </>
+                            ) : (
+                              "Not Verified"
+                            )}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>{getVerificationTooltip()}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    
                     <Badge variant="outline" className="bg-white/20 backdrop-blur-sm text-white border-white/30">
                       {journalist.role}
                     </Badge>
+                    
+                    {journalist.trending && (
+                      <Badge className="bg-red-500 flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3" />
+                        Trending
+                      </Badge>
+                    )}
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-bold">
                     {journalist.name}
@@ -153,7 +202,23 @@ const JournalistDetail = () => {
             <div className="lg:col-span-1">
               <Card className="sticky top-20">
                 <CardHeader>
-                  <CardTitle className="text-xl">About {journalist.name}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">About {journalist.name}</CardTitle>
+                    {journalist.verified && (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="flex items-center text-green-600">
+                              <Shield className="h-5 w-5" />
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Identity verified by Press Pilot</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
+                  </div>
                   <CardDescription>Journalist information and statistics</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
@@ -174,6 +239,13 @@ const JournalistDetail = () => {
                       <Globe className="h-4 w-4 text-muted-foreground" />
                       <span>{journalist.regionsOfFocus.join(', ')}</span>
                     </div>
+                    
+                    {journalist.lastActive && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>Last active {journalist.lastActive}</span>
+                      </div>
+                    )}
                   </div>
                   
                   <div className="pt-4 border-t">
@@ -222,6 +294,17 @@ const JournalistDetail = () => {
                       </div>
                     </div>
                   </div>
+                  
+                  {journalist.verified && (
+                    <div className="pt-4 border-t">
+                      <Link to="/journalist-dashboard" className="w-full">
+                        <Button className="w-full">
+                          <LayoutDashboard className="mr-2 h-4 w-4" />
+                          View Dashboard
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -249,26 +332,50 @@ const JournalistDetail = () => {
                   {journalistStories.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {journalistStories.map((story) => (
-                        <Link 
+                        <div 
                           key={story.id}
-                          to={`/stories/${story.id}`}
                           className="block transition-transform duration-300 hover:-translate-y-1"
                         >
-                          <StoryCard
-                            id={story.id}
-                            title={story.title}
-                            excerpt={story.excerpt}
-                            coverImage={story.coverImage}
-                            author={story.author}
-                            publishedAt={story.publishedAt}
-                            category={story.category}
-                            region={story.region}
-                            readTime={story.readTime}
-                            commentsCount={story.commentsCount}
-                            likesCount={story.likesCount}
-                            viewsCount={story.viewsCount}
-                          />
-                        </Link>
+                          <Link to={`/stories/${story.id}`} className="block">
+                            <Card className="overflow-hidden h-full">
+                              <div className="aspect-[16/9] overflow-hidden">
+                                <img
+                                  src={story.coverImage}
+                                  alt={story.title}
+                                  className="object-cover w-full h-full transition-transform duration-300 hover:scale-105"
+                                />
+                              </div>
+                              <CardContent className="p-5">
+                                <div className="flex justify-between items-start mb-2">
+                                  <Badge className="mb-2">{story.category}</Badge>
+                                  <div className="flex items-center text-muted-foreground text-sm">
+                                    <Calendar className="h-3 w-3 mr-1" />
+                                    {story.publishedAt}
+                                  </div>
+                                </div>
+                                <h3 className="font-bold text-lg mb-2 line-clamp-2">{story.title}</h3>
+                                <p className="text-muted-foreground text-sm line-clamp-2 mb-3">{story.excerpt}</p>
+                                
+                                <div className="flex justify-between items-center text-sm text-muted-foreground pt-2 border-t">
+                                  <div className="flex items-center">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {story.readTime} min read
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="flex items-center">
+                                      <ThumbsUp className="h-3 w-3 mr-1" />
+                                      {story.likesCount}
+                                    </span>
+                                    <span className="flex items-center">
+                                      <MessageCircle className="h-3 w-3 mr-1" />
+                                      {story.commentsCount}
+                                    </span>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </Link>
+                        </div>
                       ))}
                     </div>
                   ) : (
