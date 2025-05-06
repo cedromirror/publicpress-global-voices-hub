@@ -116,10 +116,10 @@ const StoryCard: React.FC<StoryCardProps> = ({
               {commentsCount}
             </span>
           </div>
-          <span className="flex items-center gap-1">
-            <Eye className="h-4 w-4" />
-            {viewsCount}
-          </span>
+          <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full text-xs font-medium">
+            <Eye className="h-3 w-3 text-pp-blue" />
+            <span>{viewsCount.toLocaleString()} views</span>
+          </div>
         </div>
       </div>
     </div>

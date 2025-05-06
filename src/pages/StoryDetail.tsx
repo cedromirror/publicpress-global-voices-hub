@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -7,6 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import CommentSection from '@/components/stories/CommentSection';
 import { 
   ArrowLeft, 
   Calendar, 
@@ -15,16 +16,79 @@ import {
   ThumbsUp, 
   Eye, 
   Share2, 
-  Bookmark
+  Bookmark,
+  TextSelect
 } from 'lucide-react';
 import { featuredStories, journalists } from '@/lib/data';
 import { Separator } from '@/components/ui/separator';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from "@/hooks/use-toast";
 
 const StoryDetail = () => {
   const { id } = useParams();
+  const { toast } = useToast();
   const story = featuredStories.find(s => s.id === id);
   const journalist = story ? journalists.find(j => j.name === story.author.name) : null;
+  const [viewCount, setViewCount] = useState(story?.viewsCount || 0);
+  const [hasLiked, setHasLiked] = useState(false);
+  const [isBookmarked, setIsBookmarked] = useState(false);
+  const [showHighlightTooltip, setShowHighlightTooltip] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
+  
+  // Increment view count when page loads
+  useEffect(() => {
+    if (story) {
+      setViewCount(story.viewsCount + 1);
+      
+      // Show toast notification about view count
+      toast({
+        title: "Story view tracked",
+        description: `You are viewer #${story.viewsCount + 1} of this story.`,
+      });
+    }
+  }, [story, toast]);
+  
+  // Handle text selection for highlighting
+  const handleTextSelection = () => {
+    const selection = window.getSelection();
+    if (selection && selection.toString().length > 0) {
+      setSelectedText(selection.toString());
+      setShowHighlightTooltip(true);
+    } else {
+      setShowHighlightTooltip(false);
+    }
+  };
+  
+  const handleHighlight = () => {
+    toast({
+      title: "Text highlighted",
+      description: "The selected text has been highlighted.",
+    });
+    setShowHighlightTooltip(false);
+  };
+  
+  const handleLike = () => {
+    setHasLiked(!hasLiked);
+    toast({
+      title: hasLiked ? "Like removed" : "Story liked",
+      description: hasLiked ? "You've removed your like from this story." : "You've liked this story!",
+    });
+  };
+  
+  const handleBookmark = () => {
+    setIsBookmarked(!isBookmarked);
+    toast({
+      title: isBookmarked ? "Bookmark removed" : "Story bookmarked", 
+      description: isBookmarked ? "This story has been removed from your bookmarks." : "This story has been added to your bookmarks.",
+    });
+  };
+  
+  const handleShare = () => {
+    navigator.clipboard.writeText(window.location.href);
+    toast({
+      title: "Link copied",
+      description: "The story link has been copied to your clipboard.",
+    });
+  };
   
   // Recommended stories - stories with the same category, excluding current story
   const recommendedStories = featuredStories
@@ -57,11 +121,22 @@ const StoryDetail = () => {
               Back to stories
             </Link>
             <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="flex items-center gap-1">
-                <Bookmark className="h-4 w-4" />
-                Save
+              <Button 
+                variant={isBookmarked ? "default" : "ghost"} 
+                size="sm" 
+                className="flex items-center gap-1"
+                onClick={handleBookmark}
+              >
+                <Bookmark className="h-4 w-4" 
+                  fill={isBookmarked ? "currentColor" : "none"} />
+                {isBookmarked ? "Saved" : "Save"}
               </Button>
-              <Button variant="ghost" size="sm" className="flex items-center gap-1">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="flex items-center gap-1"
+                onClick={handleShare}
+              >
                 <Share2 className="h-4 w-4" />
                 Share
               </Button>
@@ -122,11 +197,18 @@ const StoryDetail = () => {
               </div>
               
               <div className="flex items-center gap-2">
-                <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <ThumbsUp className="h-4 w-4" /> {story.likesCount}
+                <Button 
+                  variant={hasLiked ? "default" : "outline"} 
+                  size="sm" 
+                  className="flex items-center gap-1"
+                  onClick={handleLike}
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                  {hasLiked ? story.likesCount + 1 : story.likesCount}
                 </Button>
                 <Button variant="outline" size="sm" className="flex items-center gap-1">
-                  <MessageCircle className="h-4 w-4" /> {story.commentsCount}
+                  <MessageCircle className="h-4 w-4" />
+                  {story.commentsCount}
                 </Button>
               </div>
             </div>
@@ -139,11 +221,15 @@ const StoryDetail = () => {
               />
               <div className="absolute bottom-4 right-4 bg-black/60 text-white text-sm px-3 py-1 rounded-full flex items-center gap-1">
                 <Eye className="h-3 w-3" />
-                {story.viewsCount} views
+                {viewCount.toLocaleString()} views
               </div>
             </div>
             
-            <div className="prose prose-lg max-w-none story-content">
+            <div 
+              className="prose prose-lg max-w-none story-content relative"
+              onMouseUp={handleTextSelection}
+              onTouchEnd={handleTextSelection}
+            >
               <p>Climate change is rapidly transforming our global food systems in ways that many people don't yet fully understand. From shifting growing seasons to increased water scarcity, the challenges are mounting for farmers worldwide.</p>
               
               <p>In coastal regions, rising sea levels are causing saltwater intrusion into farmland, rendering once-fertile soil unusable. Meanwhile, in traditionally temperate regions, unpredictable weather patterns are disrupting planting schedules and increasing crop failures.</p>
@@ -157,6 +243,19 @@ const StoryDetail = () => {
               <p>Additionally, indigenous knowledge systems, which have adapted to local conditions over generations, are gaining recognition for their sustainability.</p>
               
               <p>The path forward will require unprecedented cooperation between governments, scientists, farmers, and consumers. Policy changes, technological innovation, and shifts in consumption patterns must all play a role in building resilient food systems for the future.</p>
+              
+              {showHighlightTooltip && selectedText && (
+                <div className="absolute bg-white shadow-lg rounded-md p-2 z-10 flex">
+                  <Button 
+                    size="sm" 
+                    onClick={handleHighlight}
+                    className="flex items-center gap-1"
+                  >
+                    <TextSelect className="h-3 w-3" />
+                    Highlight
+                  </Button>
+                </div>
+              )}
             </div>
             
             <div className="flex items-center justify-between py-4 border-t border-b">
@@ -164,17 +263,32 @@ const StoryDetail = () => {
                 Published under <Badge variant="outline">{story.category}</Badge>
               </div>
               <div className="flex items-center gap-4">
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Button 
+                  variant={hasLiked ? "default" : "outline"} 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={handleLike}
+                >
                   <ThumbsUp className="h-4 w-4" />
-                  Like
+                  {hasLiked ? "Liked" : "Like"}
                 </Button>
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={handleShare}
+                >
                   <Share2 className="h-4 w-4" />
                   Share
                 </Button>
-                <Button variant="outline" size="sm" className="flex items-center gap-2">
-                  <Bookmark className="h-4 w-4" />
-                  Save
+                <Button 
+                  variant={isBookmarked ? "default" : "outline"} 
+                  size="sm" 
+                  className="flex items-center gap-2"
+                  onClick={handleBookmark}
+                >
+                  <Bookmark className="h-4 w-4" fill={isBookmarked ? "currentColor" : "none"} />
+                  {isBookmarked ? "Saved" : "Save"}
                 </Button>
               </div>
             </div>
@@ -216,6 +330,11 @@ const StoryDetail = () => {
             </Card>
           )}
           
+          {/* Comment section */}
+          <div className="mb-8">
+            <CommentSection storyId={story.id} commentsCount={story.commentsCount} />
+          </div>
+          
           {/* Recommended stories */}
           {recommendedStories.length > 0 && (
             <div className="mb-12">
@@ -251,15 +370,6 @@ const StoryDetail = () => {
           )}
           
           <Separator className="my-8" />
-          
-          {/* Comments section placeholder */}
-          <div className="mb-8">
-            <h2 className="text-2xl font-playfair font-bold mb-6">Comments ({story.commentsCount})</h2>
-            <div className="bg-gray-50 rounded-lg p-8 text-center">
-              <p className="text-muted-foreground">Join the conversation and leave your thoughts on this story.</p>
-              <Button className="mt-4">Sign in to comment</Button>
-            </div>
-          </div>
         </div>
       </div>
       <Footer />
