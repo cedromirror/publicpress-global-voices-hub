@@ -2,32 +2,33 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MessageCircle, ThumbsUp, Eye } from 'lucide-react';
+import { featuredStories, journalists } from '@/lib/data';
 
 const StoryDetail = () => {
   const { id } = useParams();
+  const story = featuredStories.find(s => s.id === id);
+  const journalist = journalists.find(j => j.name === story?.author.name);
   
-  // This would normally fetch the story from an API
-  const story = {
-    title: "The Impact of Climate Change on Global Food Systems",
-    author: "Maria Rodriguez",
-    date: "May 5, 2023",
-    content: `
-      Climate change is rapidly transforming our global food systems in ways that many people don't yet fully understand. From shifting growing seasons to increased water scarcity, the challenges are mounting for farmers worldwide.
-      
-      In coastal regions, rising sea levels are causing saltwater intrusion into farmland, rendering once-fertile soil unusable. Meanwhile, in traditionally temperate regions, unpredictable weather patterns are disrupting planting schedules and increasing crop failures.
-      
-      This is not just an environmental crisis but a humanitarian one as well. Food security experts predict that without significant adaptation measures, crop yields could decrease by up to 30% by 2050 in some regions. The most vulnerable populations—often those who have contributed least to climate change—stand to suffer the most severe consequences.
-      
-      However, innovative approaches to agriculture are emerging. Vertical farming, drought-resistant crop varieties, and improved water management techniques offer promising solutions. Additionally, indigenous knowledge systems, which have adapted to local conditions over generations, are gaining recognition for their sustainability.
-      
-      The path forward will require unprecedented cooperation between governments, scientists, farmers, and consumers. Policy changes, technological innovation, and shifts in consumption patterns must all play a role in building resilient food systems for the future.
-    `,
-    imageUrl: "https://source.unsplash.com/random/800x400/?farming",
-    tags: ["Climate", "Agriculture", "Food Security"]
-  };
+  if (!story) {
+    return (
+      <>
+        <Navbar />
+        <div className="container mx-auto px-4 py-12 text-center">
+          <h1 className="text-2xl font-bold">Story not found</h1>
+          <Link to="/stories" className="text-pp-blue hover:underline mt-4 inline-block">
+            Back to Stories
+          </Link>
+        </div>
+        <Footer />
+      </>
+    );
+  }
 
   return (
     <>
@@ -40,31 +41,88 @@ const StoryDetail = () => {
 
         <Card className="mb-8">
           <img 
-            src={story.imageUrl} 
+            src={story.coverImage} 
             alt={story.title} 
             className="w-full h-64 md:h-96 object-cover rounded-t-lg" 
           />
           <CardHeader>
             <div className="flex flex-wrap gap-2 mb-3">
-              {story.tags.map((tag, index) => (
-                <span key={index} className="bg-pp-blue/10 text-pp-blue text-xs font-medium px-2.5 py-1 rounded">
-                  {tag}
-                </span>
-              ))}
+              <Badge className="bg-pp-blue hover:bg-pp-blue/90">
+                {story.category}
+              </Badge>
+              <Badge variant="outline" className="bg-gray-100">
+                {story.region}
+              </Badge>
             </div>
             <CardTitle className="text-2xl md:text-3xl lg:text-4xl font-playfair">{story.title}</CardTitle>
-            <CardDescription>
-              By {story.author} • Published on {story.date}
+            <CardDescription className="flex flex-wrap gap-4 items-center mt-4">
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <span>{story.publishedAt}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-muted-foreground" />
+                <span>{story.readTime} min read</span>
+              </div>
             </CardDescription>
           </CardHeader>
           <CardContent>
+            <Link 
+              to={journalist ? `/journalists/${journalist.id}` : '#'} 
+              className="flex items-center gap-3 p-4 border rounded-lg mb-6 hover:bg-gray-50 transition-colors"
+            >
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={story.author.avatar} alt={story.author.name} />
+                <AvatarFallback className="bg-pp-blue/20 text-pp-blue">
+                  {story.author.name.substring(0, 2).toUpperCase()}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <div className="font-medium flex items-center gap-1">
+                  {story.author.name}
+                  {story.author.verified && (
+                    <Badge variant="outline" className="ml-1 py-0 px-1 h-4 border-pp-blue">
+                      <span className="sr-only">Verified</span>
+                      ✓
+                    </Badge>
+                  )}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {journalist?.role || "Journalist"}
+                </div>
+              </div>
+            </Link>
+            
             <div className="prose prose-lg max-w-none">
-              {story.content.split("\n\n").map((paragraph, index) => (
-                <p key={index} className="mb-4 text-gray-700">{paragraph}</p>
-              ))}
+              <p className="mb-4 text-gray-700">Climate change is rapidly transforming our global food systems in ways that many people don't yet fully understand. From shifting growing seasons to increased water scarcity, the challenges are mounting for farmers worldwide.</p>
+              
+              <p className="mb-4 text-gray-700">In coastal regions, rising sea levels are causing saltwater intrusion into farmland, rendering once-fertile soil unusable. Meanwhile, in traditionally temperate regions, unpredictable weather patterns are disrupting planting schedules and increasing crop failures.</p>
+              
+              <p className="mb-4 text-gray-700">This is not just an environmental crisis but a humanitarian one as well. Food security experts predict that without significant adaptation measures, crop yields could decrease by up to 30% by 2050 in some regions. The most vulnerable populations—often those who have contributed least to climate change—stand to suffer the most severe consequences.</p>
+              
+              <p className="mb-4 text-gray-700">However, innovative approaches to agriculture are emerging. Vertical farming, drought-resistant crop varieties, and improved water management techniques offer promising solutions. Additionally, indigenous knowledge systems, which have adapted to local conditions over generations, are gaining recognition for their sustainability.</p>
+              
+              <p className="mb-4 text-gray-700">The path forward will require unprecedented cooperation between governments, scientists, farmers, and consumers. Policy changes, technological innovation, and shifts in consumption patterns must all play a role in building resilient food systems for the future.</p>
             </div>
             
-            <div className="mt-8 border-t pt-6">
+            <div className="flex items-center justify-between mt-8 py-4 border-t border-b">
+              <div className="flex items-center gap-6">
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <ThumbsUp className="h-4 w-4" />
+                  <span>{story.likesCount}</span>
+                </Button>
+                <Button variant="ghost" className="flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  <span>{story.commentsCount}</span>
+                </Button>
+              </div>
+              <div className="flex items-center gap-2">
+                <Eye className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">{story.viewsCount} views</span>
+              </div>
+            </div>
+            
+            <div className="mt-8">
               <h3 className="text-xl font-semibold mb-4">Share this story</h3>
               <div className="flex gap-3">
                 <Button variant="outline" size="sm">
@@ -91,6 +149,7 @@ const StoryDetail = () => {
           </CardContent>
         </Card>
       </div>
+      <Footer />
     </>
   );
 };
