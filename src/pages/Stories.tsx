@@ -5,25 +5,35 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import StoryCard from '@/components/stories/StoryCard';
 import CategoriesNav from '@/components/stories/CategoriesNav';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { featuredStories, regions, topCategories, categoriesWithSubcategories } from '@/lib/data';
-import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle, Globe, Tag } from 'lucide-react';
+import { featuredStories, regions } from '@/lib/data';
+import { 
+  Container, 
+  Typography, 
+  Box, 
+  TextField, 
+  InputAdornment, 
+  Button, 
+  Chip, 
+  Grid, 
+  Divider,
+  IconButton,
+  Menu,
+  MenuItem,
+  ListItemIcon,
+  ListItemText
+} from '@mui/material';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Search as SearchIcon,
+  FilterAlt as FilterIcon,
+  TrendingUp as TrendingUpIcon,
+  CalendarMonth as CalendarIcon,
+  Comment as MessageCircleIcon,
+  Public as GlobeIcon,
+  Label as TagIcon,
+  ArrowUpward as SortAscIcon,
+  ArrowDownward as SortDescIcon,
+  Refresh as ResetIcon
+} from '@mui/icons-material';
 
 const Stories = () => {
   const location = useLocation();
@@ -35,6 +45,15 @@ const Stories = () => {
   const [activeCategory, setActiveCategory] = useState(queryParams.get('category') || 'All');
   const [sortBy, setSortBy] = useState<string>("popular"); // popular, newest, mostCommented
   const [isAscending, setIsAscending] = useState(false);
+  const [filterAnchorEl, setFilterAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleOpenFilterMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setFilterAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseFilterMenu = () => {
+    setFilterAnchorEl(null);
+  };
   
   // Update URL when filters change
   useEffect(() => {
@@ -102,7 +121,7 @@ const Stories = () => {
     
     if (!matchesCategory) {
       if (subcategory) {
-        // TODO: In a real app, stories would have subcategories. For now, we're just matching main category
+        // In a real app, stories would have subcategories
         matchesCategory = story.category === mainCategory;
       } else {
         matchesCategory = story.category === mainCategory;
@@ -112,112 +131,137 @@ const Stories = () => {
     return matchesSearch && matchesRegion && matchesCategory;
   }));
 
+  const resetFilters = () => {
+    setSearchTerm('');
+    setActiveRegion('All');
+    setActiveCategory('All');
+    setSortBy('popular');
+    setIsAscending(false);
+    handleCloseFilterMenu();
+  };
+
   return (
     <>
       <Navbar />
-      <div className="bg-gradient-to-b from-pp-gray to-white">
-        <div className="container mx-auto px-4 py-12">
-          <div className="mb-10 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold font-playfair mb-4">Stories</h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+      <Box sx={{ 
+        background: 'linear-gradient(to bottom, #f1f5f9, #ffffff)',
+        pt: 8,
+        pb: 8 
+      }}>
+        <Container maxWidth="lg">
+          <Box sx={{ mb: 6, textAlign: 'center' }}>
+            <Typography variant="h2" component="h1" gutterBottom sx={{ fontWeight: 'bold' }}>
+              Stories
+            </Typography>
+            <Typography variant="h5" color="text.secondary" sx={{ maxWidth: '700px', mx: 'auto' }}>
               Discover the latest stories from our global network of journalists
-            </p>
-          </div>
+            </Typography>
+          </Box>
           
-          <div className="mb-8 space-y-4">
-            <div className="flex items-center gap-2 flex-wrap md:flex-nowrap">
-              <div className="relative w-full md:flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground h-4 w-4" />
-                <Input 
-                  placeholder="Search stories..." 
-                  className="pl-10"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
+          <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+              <TextField
+                fullWidth 
+                placeholder="Search stories..." 
+                variant="outlined"
+                size="small"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SearchIcon fontSize="small" />
+                    </InputAdornment>
+                  ),
+                }}
+              />
               
-              <div className="flex items-center gap-2 w-full md:w-auto flex-wrap">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="flex items-center gap-2 whitespace-nowrap">
-                      <Filter className="h-4 w-4" />
-                      Filters
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[220px]">
-                    <div className="p-2">
-                      <p className="text-sm font-medium mb-2">Sort by</p>
-                      <Select
-                        value={sortBy}
-                        onValueChange={setSortBy}
-                      >
-                        <SelectTrigger className="w-full mb-2">
-                          <SelectValue placeholder="Sort by" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="popular">
-                            <div className="flex items-center">
-                              <TrendingUp className="mr-2 h-4 w-4" />
-                              <span>Popular</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="newest">
-                            <div className="flex items-center">
-                              <Calendar className="mr-2 h-4 w-4" />
-                              <span>Newest</span>
-                            </div>
-                          </SelectItem>
-                          <SelectItem value="mostCommented">
-                            <div className="flex items-center">
-                              <MessageCircle className="mr-2 h-4 w-4" />
-                              <span>Most Commented</span>
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
-                        onClick={() => setIsAscending(!isAscending)} 
-                        className="w-full justify-start"
-                      >
-                        {isAscending ? (
-                          <><SortAsc className="mr-2 h-4 w-4" /> Ascending</>
-                        ) : (
-                          <><SortDesc className="mr-2 h-4 w-4" /> Descending</>
-                        )}
-                      </Button>
-                    </div>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+              <Box sx={{ 
+                display: 'flex', 
+                gap: 1, 
+                flexWrap: 'wrap',
+                width: { xs: '100%', md: 'auto' }
+              }}>
+                <Button 
+                  variant="outlined" 
+                  startIcon={<FilterIcon />} 
+                  size="medium"
+                  onClick={handleOpenFilterMenu}
+                >
+                  Filters
+                </Button>
+                <Menu
+                  anchorEl={filterAnchorEl}
+                  open={Boolean(filterAnchorEl)}
+                  onClose={handleCloseFilterMenu}
+                >
+                  <MenuItem disabled sx={{ fontWeight: 'bold' }}>Sort by</MenuItem>
+                  <MenuItem 
+                    onClick={() => { setSortBy("popular"); handleCloseFilterMenu(); }}
+                    selected={sortBy === "popular"}
+                  >
+                    <ListItemIcon>
+                      <TrendingUpIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Popular</ListItemText>
+                  </MenuItem>
+                  <MenuItem 
+                    onClick={() => { setSortBy("newest"); handleCloseFilterMenu(); }}
+                    selected={sortBy === "newest"}
+                  >
+                    <ListItemIcon>
+                      <CalendarIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Newest</ListItemText>
+                  </MenuItem>
+                  <MenuItem 
+                    onClick={() => { setSortBy("mostCommented"); handleCloseFilterMenu(); }}
+                    selected={sortBy === "mostCommented"}
+                  >
+                    <ListItemIcon>
+                      <MessageCircleIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Most Commented</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem 
+                    onClick={() => { setIsAscending(!isAscending); handleCloseFilterMenu(); }}
+                  >
+                    <ListItemIcon>
+                      {isAscending ? <SortAscIcon fontSize="small" /> : <SortDescIcon fontSize="small" />}
+                    </ListItemIcon>
+                    <ListItemText>{isAscending ? "Ascending" : "Descending"}</ListItemText>
+                  </MenuItem>
+                  <Divider />
+                  <MenuItem onClick={resetFilters}>
+                    <ListItemIcon>
+                      <ResetIcon fontSize="small" />
+                    </ListItemIcon>
+                    <ListItemText>Reset Filters</ListItemText>
+                  </MenuItem>
+                </Menu>
                 
                 <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    setSearchTerm('');
-                    setActiveRegion('All');
-                    setActiveCategory('All');
-                    setSortBy('popular');
-                    setIsAscending(false);
-                  }}
+                  variant="outlined" 
+                  size="medium"
+                  onClick={resetFilters}
+                  startIcon={<ResetIcon />}
                 >
-                  Reset Filters
+                  Reset
                 </Button>
                 
                 <Button
-                  variant="default"
-                  size="sm"
-                  className="flex items-center gap-1"
+                  variant="contained"
+                  size="medium"
+                  startIcon={
+                    sortBy === "popular" ? <TrendingUpIcon /> : 
+                    sortBy === "newest" ? <CalendarIcon /> : <MessageCircleIcon />
+                  }
                 >
-                  {sortBy === "popular" && <TrendingUp className="h-4 w-4" />}
-                  {sortBy === "newest" && <Calendar className="h-4 w-4" />}
-                  {sortBy === "mostCommented" && <MessageCircle className="h-4 w-4" />}
                   {sortBy === "popular" ? "Popular" : sortBy === "newest" ? "Newest" : "Most Commented"}
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
             
             {/* Categories and Regions Navigation */}
             <CategoriesNav 
@@ -227,89 +271,89 @@ const Stories = () => {
               setActiveRegion={setActiveRegion}
             />
             
-            <div className="flex justify-between items-center text-sm text-muted-foreground">
-              <span>
+            <Box 
+              sx={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center', 
+                color: 'text.secondary',
+                fontSize: '0.875rem'
+              }}
+            >
+              <Typography variant="body2" color="text.secondary">
                 {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'} found
-              </span>
+              </Typography>
+              
               {(activeCategory !== 'All' || activeRegion !== 'All') && (
-                <div className="flex items-center gap-2 flex-wrap">
+                <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
                   {activeCategory !== 'All' && (
-                    <Badge variant="outline" className="bg-blue-50 flex items-center gap-1">
-                      <Tag className="h-3 w-3" /> 
-                      {subcategory ? (
-                        <span>
-                          {mainCategory}: <span className="font-semibold">{subcategory}</span>
-                        </span>
-                      ) : (
-                        mainCategory
-                      )}
-                      <button 
-                        className="ml-1 text-muted hover:text-foreground" 
-                        onClick={() => setActiveCategory('All')}
-                      >
-                        ×
-                      </button>
-                    </Badge>
+                    <Chip
+                      icon={<TagIcon fontSize="small" />}
+                      label={subcategory ? `${mainCategory}: ${subcategory}` : mainCategory}
+                      onDelete={() => setActiveCategory('All')}
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                    />
                   )}
+                  
                   {activeRegion !== 'All' && (
-                    <Badge variant="outline" className="bg-green-50 flex items-center gap-1">
-                      <Globe className="h-3 w-3" /> {activeRegion}
-                      <button 
-                        className="ml-1 text-muted hover:text-foreground" 
-                        onClick={() => setActiveRegion('All')}
-                      >
-                        ×
-                      </button>
-                    </Badge>
+                    <Chip
+                      icon={<GlobeIcon fontSize="small" />}
+                      label={activeRegion}
+                      onDelete={() => setActiveRegion('All')}
+                      variant="outlined"
+                      size="small"
+                      color="success"
+                    />
                   )}
-                </div>
+                </Box>
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
           
           {filteredStories.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Grid container spacing={3}>
               {filteredStories.map((story) => (
-                <Link 
-                  key={story.id}
-                  to={`/stories/${story.id}`}
-                  className="block transition-transform duration-300 hover:-translate-y-1"
-                >
-                  <StoryCard
-                    id={story.id}
-                    title={story.title}
-                    excerpt={story.excerpt}
-                    coverImage={story.coverImage}
-                    author={story.author}
-                    publishedAt={story.publishedAt}
-                    category={story.category}
-                    region={story.region}
-                    readTime={story.readTime}
-                    commentsCount={story.commentsCount}
-                    likesCount={story.likesCount}
-                    viewsCount={story.viewsCount}
-                  />
-                </Link>
+                <Grid item key={story.id} xs={12} sm={6} md={4}>
+                  <Link 
+                    to={`/stories/${story.id}`}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <StoryCard
+                      id={story.id}
+                      title={story.title}
+                      excerpt={story.excerpt}
+                      coverImage={story.coverImage}
+                      author={story.author}
+                      publishedAt={story.publishedAt}
+                      category={story.category}
+                      region={story.region}
+                      readTime={story.readTime}
+                      commentsCount={story.commentsCount}
+                      likesCount={story.likesCount}
+                      viewsCount={story.viewsCount}
+                    />
+                  </Link>
+                </Grid>
               ))}
-            </div>
+            </Grid>
           ) : (
-            <div className="text-center py-12">
-              <p className="text-xl text-muted-foreground">No stories found matching your criteria.</p>
+            <Box sx={{ textAlign: 'center', py: 6 }}>
+              <Typography variant="h6" color="text.secondary" gutterBottom>
+                No stories found matching your criteria.
+              </Typography>
               <Button 
-                variant="outline" 
-                className="mt-4"
-                onClick={() => {
-                  setSearchTerm('');
-                  setActiveRegion('All');
-                  setActiveCategory('All');
-                }}
+                variant="outlined" 
+                sx={{ mt: 2 }}
+                onClick={resetFilters}
               >
                 Clear filters
               </Button>
-            </div>
+            </Box>
           )}
-        </div>
-      </div>
+        </Container>
+      </Box>
       <Footer />
     </>
   );
