@@ -37,6 +37,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Link, useNavigate } from 'react-router-dom';
 
 const mockData = {
   viewsPerDay: [1200, 1350, 890, 1500, 1800, 2200, 1900],
@@ -130,12 +131,10 @@ const mockData = {
 const JournalistDashboard = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const handleNewStory = () => {
-    toast({
-      title: "Feature coming soon",
-      description: "The story editor will be available in the next update",
-    });
+    navigate('/create-story');
   };
 
   const handleApplyVerification = () => {
@@ -411,7 +410,7 @@ const JournalistDashboard = () => {
                           <Filter className="h-3 w-3 mr-1" />
                           Filter
                         </Button>
-                        <Button size="sm" className="h-8">
+                        <Button size="sm" className="h-8" onClick={handleNewStory}>
                           <PlusCircle className="h-3 w-3 mr-1" />
                           New Story
                         </Button>
@@ -419,13 +418,16 @@ const JournalistDashboard = () => {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-center py-16">
+                    <div className="text-center py-10">
                       <FileText className="h-16 w-16 mx-auto text-gray-300 mb-4" />
-                      <h3 className="text-xl font-medium mb-2">Story management coming soon</h3>
-                      <p className="text-muted-foreground">
-                        This feature is still in development.
+                      <h3 className="text-xl font-medium mb-2">Ready to share your voice?</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto mb-4">
+                        Create your first story with text, images, videos, and audio to engage with readers worldwide.
                       </p>
-                      <Button className="mt-4">Create your first story</Button>
+                      <Button onClick={handleNewStory}>
+                        <PlusCircle className="mr-2 h-4 w-4" />
+                        Create your first story
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
