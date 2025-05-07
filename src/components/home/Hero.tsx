@@ -1,10 +1,70 @@
 
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from "@/components/ui/button";
-import { Globe, ChevronRight, Volume2, Newspaper } from "lucide-react";
+import { Globe, ChevronRight, Volume2, Newspaper, Play, Pause } from "lucide-react";
 import { motion } from "framer-motion";
+import { 
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { toast } from "@/components/ui/use-toast";
 
 const Hero = () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioSources = [
+    "/audio/en-welcome.mp3",
+    "/audio/es-welcome.mp3",
+    "/audio/fr-welcome.mp3",
+  ];
+  const [currentAudioIndex, setCurrentAudioIndex] = useState(0);
+
+  const toggleAudio = () => {
+    if (!audioRef.current) {
+      audioRef.current = new Audio(audioSources[currentAudioIndex]);
+      audioRef.current.onended = () => {
+        setIsPlaying(false);
+        // Move to the next audio in the playlist
+        const nextIndex = (currentAudioIndex + 1) % audioSources.length;
+        setCurrentAudioIndex(nextIndex);
+      };
+    }
+
+    if (isPlaying) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    } else {
+      // Load the current audio
+      audioRef.current.src = audioSources[currentAudioIndex];
+      audioRef.current.play().catch(error => {
+        console.error("Audio playback error:", error);
+        toast({
+          title: "Audio Error",
+          description: "Could not play the audio file. Please try again.",
+          variant: "destructive"
+        });
+        setIsPlaying(false);
+      });
+      setIsPlaying(true);
+      
+      toast({
+        title: "Playing Global Voice",
+        description: `Now playing welcome message in ${currentAudioIndex === 0 ? 'English' : currentAudioIndex === 1 ? 'Spanish' : 'French'}`,
+        variant: "default"
+      });
+    }
+  };
+
+  const handlePublish = () => {
+    toast({
+      title: "Publishing Platform",
+      description: "Start publishing your stories to a global audience today!",
+      variant: "default"
+    });
+  };
+
   return (
     <section className="relative overflow-hidden py-20 md:py-32">
       {/* Modern gradient background */}
@@ -49,20 +109,59 @@ const Hero = () => {
             </p>
             
             <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
-              <Button size="lg" className="bg-white text-pp-navy hover:bg-gray-100 px-6 shadow-lg">
-                Start Publishing
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="lg" 
+                      className="bg-white text-pp-navy hover:bg-gray-100 px-6 shadow-lg"
+                      onClick={handlePublish}
+                    >
+                      Start Publishing
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Publish stories to a global audience</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               
-              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 px-6 gap-2">
-                <Volume2 className="h-5 w-5" />
-                Global Voices
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="lg" 
+                      variant="outline" 
+                      className="text-white border-white hover:bg-white/10 px-6 gap-2"
+                      onClick={toggleAudio}
+                    >
+                      {isPlaying ? (
+                        <Pause className="h-5 w-5" />
+                      ) : (
+                        <Volume2 className="h-5 w-5" />
+                      )}
+                      Global Voices
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>{isPlaying ? "Pause" : "Play"} welcome message in different languages</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
           
           {/* Modern 3D Globe Illustration */}
-          <div className="md:w-1/2 flex justify-center md:justify-end">
+          <motion.div 
+            className="md:w-1/2 flex justify-center md:justify-end"
+            animate={{ rotate: isPlaying ? 360 : 0 }}
+            transition={{ 
+              duration: isPlaying ? 20 : 0,
+              repeat: isPlaying ? Infinity : 0,
+              ease: "linear" 
+            }}
+          >
             <div className="relative w-64 h-64 md:w-96 md:h-96">
               {/* Stylized globe visualization */}
               <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/30 to-blue-700/50 backdrop-blur-xl border border-white/20 shadow-[0_0_40px_rgba(59,130,246,0.3)]"></div>
@@ -82,18 +181,20 @@ const Hero = () => {
               {/* Globe overlay */}
               <Globe className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/50 h-24 w-24" />
             </div>
-          </div>
+          </motion.div>
         </div>
         
         {/* Floating news tags */}
         <div className="mt-8 md:mt-16 flex flex-wrap justify-center gap-4">
           {["Politics", "Environment", "Technology", "Health", "Economy"].map((tag) => (
-            <div 
+            <motion.div 
               key={tag}
               className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {tag}
-            </div>
+            </motion.div>
           ))}
         </div>
       </div>
