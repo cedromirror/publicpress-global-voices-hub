@@ -94,12 +94,7 @@ const theme = createTheme({
         },
       },
     },
-    MuiGrid: {  // Changed from MuiGrid2 to MuiGrid
-      defaultProps: {
-        // Enable the new Grid system
-        disableEqualOverflow: false,
-      },
-    },
+    // Removed the invalid MuiGrid configuration
   },
 });
 
