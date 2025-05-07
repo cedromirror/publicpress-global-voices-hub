@@ -27,16 +27,48 @@ import {
   CheckCircle,
   Shield,
   TrendingUp,
-  Clock
+  Clock,
+  MessageCircle,
+  ThumbsUp,
+  LayoutDashboard
 } from 'lucide-react';
 import { journalists, featuredStories } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
+// Define extended journalist type to include the properties used in this component
+type ExtendedJournalist = {
+  id: string;
+  name: string;
+  role: string; 
+  avatar: string;
+  coverImage: string;
+  bio: string;
+  longBio: string;
+  expertise: string[];
+  verified: boolean;
+  location: string;
+  joinedDate: string;
+  storiesCount: number;
+  regionsOfFocus: string[];
+  awards: string[];
+  verificationLevel?: "standard" | "gold" | "platinum";
+  trending?: boolean;
+  lastActive?: string;
+};
+
 const JournalistDetail = () => {
   const { id } = useParams();
-  const journalist = journalists.find(j => j.id === id);
+  const rawJournalist = journalists.find(j => j.id === id);
+  // Add default values for missing properties
+  const journalist: ExtendedJournalist | undefined = rawJournalist ? {
+    ...rawJournalist,
+    verificationLevel: rawJournalist.verified ? "standard" : undefined,
+    trending: false,
+    lastActive: "1 day ago"
+  } : undefined;
+  
   const { toast } = useToast();
   const [isFollowing, setIsFollowing] = useState(false);
   const [activeTab, setActiveTab] = useState('stories');

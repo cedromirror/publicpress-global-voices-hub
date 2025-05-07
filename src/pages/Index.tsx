@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -24,7 +23,7 @@ import {
   ScrollText,
   UserCheck,
   Globe,
-  GlobeSearch
+  Search
 } from 'lucide-react';
 import { 
   DropdownMenu,
@@ -320,7 +319,7 @@ const Index = () => {
                 <Card className="overflow-hidden border-t-4 border-t-purple-500">
                   <div className="bg-gradient-to-r from-purple-50 to-white p-3 border-b">
                     <div className="flex items-center">
-                      <GlobeSearch className="text-purple-500 h-5 w-5 mr-2" />
+                      <Search className="text-purple-500 h-5 w-5 mr-2" />
                       <h3 className="font-bold text-lg">Explore Regions</h3>
                     </div>
                   </div>

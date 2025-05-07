@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -188,7 +187,7 @@ const JournalistDashboard = () => {
                       <span className="text-sm text-amber-800">Complete your profile to get verified</span>
                       <span className="text-sm font-medium text-amber-800">{mockData.verificationProgress}%</span>
                     </div>
-                    <Progress value={mockData.verificationProgress} className="h-2 bg-amber-200" indicatorClassName="bg-amber-500" />
+                    <Progress value={mockData.verificationProgress} className="h-2 bg-amber-200" />
                     <p className="text-xs text-amber-700 mt-2">
                       Verified journalists get more visibility and credibility on the platform.
                     </p>
