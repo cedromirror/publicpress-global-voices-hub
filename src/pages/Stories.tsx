@@ -315,7 +315,7 @@ const Stories = () => {
           {filteredStories.length > 0 ? (
             <Grid container spacing={3}>
               {filteredStories.map((story) => (
-                <Grid item key={story.id} xs={12} sm={6} md={4}>
+                <Grid key={story.id} xs={12} sm={6} md={4}>
                   <Link 
                     to={`/stories/${story.id}`}
                     style={{ textDecoration: 'none' }}

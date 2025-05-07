@@ -94,6 +94,12 @@ const theme = createTheme({
         },
       },
     },
+    MuiGrid2: {
+      defaultProps: {
+        // Enable the new Grid system
+        disableEqualOverflow: false,
+      },
+    },
   },
 });
 
