@@ -3,7 +3,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Globe, Category } from 'lucide-react';
+import { Globe, BookOpen } from 'lucide-react';
 import { regions, topCategories } from '@/lib/data';
 
 interface CategoriesNavProps {
@@ -23,7 +23,7 @@ const CategoriesNav = ({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <Card>
         <div className="p-4 border-b bg-gradient-to-r from-blue-50 to-white flex items-center">
-          <Category className="h-5 w-5 text-blue-600 mr-2" />
+          <BookOpen className="h-5 w-5 text-blue-600 mr-2" />
           <h3 className="text-lg font-semibold">News Categories</h3>
         </div>
         <CardContent className="p-4">
