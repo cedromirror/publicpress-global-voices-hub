@@ -9,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { featuredStories, regions, topCategories } from '@/lib/data';
-import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle, Globe } from 'lucide-react';
+import { featuredStories, regions, topCategories, categoriesWithSubcategories } from '@/lib/data';
+import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle, Globe, Tag } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -52,6 +52,20 @@ const Stories = () => {
     navigate(`/stories${newUrl}`, { replace: true });
   }, [activeRegion, activeCategory, navigate]);
   
+  // Parse category and subcategory
+  const getCategoryInfo = () => {
+    if (activeCategory === 'All') return { mainCategory: 'All', subcategory: null };
+    
+    const parts = activeCategory.split(': ');
+    if (parts.length > 1) {
+      return { mainCategory: parts[0], subcategory: parts[1] };
+    } else {
+      return { mainCategory: parts[0], subcategory: null };
+    }
+  };
+  
+  const { mainCategory, subcategory } = getCategoryInfo();
+  
   // Sort stories based on current sorting options
   const sortStories = (stories: any[]) => {
     let sortedStories;
@@ -82,7 +96,18 @@ const Stories = () => {
     const matchesSearch = story.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           story.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRegion = activeRegion === 'All' || story.region === activeRegion;
-    const matchesCategory = activeCategory === 'All' || story.category === activeCategory;
+    
+    // For category matching, we need to check both main category and subcategory if available
+    let matchesCategory = activeCategory === 'All';
+    
+    if (!matchesCategory) {
+      if (subcategory) {
+        // TODO: In a real app, stories would have subcategories. For now, we're just matching main category
+        matchesCategory = story.category === mainCategory;
+      } else {
+        matchesCategory = story.category === mainCategory;
+      }
+    }
     
     return matchesSearch && matchesRegion && matchesCategory;
   }));
@@ -207,10 +232,17 @@ const Stories = () => {
                 {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'} found
               </span>
               {(activeCategory !== 'All' || activeRegion !== 'All') && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   {activeCategory !== 'All' && (
-                    <Badge variant="outline" className="bg-blue-50">
-                      Category: {activeCategory}
+                    <Badge variant="outline" className="bg-blue-50 flex items-center gap-1">
+                      <Tag className="h-3 w-3" /> 
+                      {subcategory ? (
+                        <span>
+                          {mainCategory}: <span className="font-semibold">{subcategory}</span>
+                        </span>
+                      ) : (
+                        mainCategory
+                      )}
                       <button 
                         className="ml-1 text-muted hover:text-foreground" 
                         onClick={() => setActiveCategory('All')}
@@ -220,8 +252,8 @@ const Stories = () => {
                     </Badge>
                   )}
                   {activeRegion !== 'All' && (
-                    <Badge variant="outline" className="bg-green-50">
-                      Region: {activeRegion}
+                    <Badge variant="outline" className="bg-green-50 flex items-center gap-1">
+                      <Globe className="h-3 w-3" /> {activeRegion}
                       <button 
                         className="ml-1 text-muted hover:text-foreground" 
                         onClick={() => setActiveRegion('All')}

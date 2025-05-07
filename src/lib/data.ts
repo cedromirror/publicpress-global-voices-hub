@@ -1,4 +1,3 @@
-
 export const featuredStories = [
   {
     id: "1",
@@ -122,6 +121,109 @@ export const topCategories = [
   "Environment",
   "Education"
 ];
+
+export const categoriesWithSubcategories = {
+  "Politics": [
+    "Elections",
+    "Diplomacy",
+    "Legislation",
+    "Policy",
+    "Government",
+    "International Relations",
+    "Local Politics",
+    "Political Movements"
+  ],
+  "Climate": [
+    "Climate Change",
+    "Global Warming",
+    "Carbon Emissions",
+    "Climate Policy",
+    "Natural Disasters",
+    "Climate Justice",
+    "Renewable Energy",
+    "Adaptation"
+  ],
+  "Technology": [
+    "Artificial Intelligence",
+    "Cybersecurity",
+    "Digital Privacy",
+    "Tech Policy",
+    "Innovation",
+    "Social Media",
+    "Digital Economy",
+    "Emerging Tech"
+  ],
+  "Human Rights": [
+    "Civil Liberties",
+    "Gender Equality",
+    "Racial Justice",
+    "Indigenous Rights",
+    "LGBTQ+ Rights",
+    "Freedom of Speech",
+    "Migration Rights",
+    "Political Prisoners"
+  ],
+  "Health": [
+    "Global Health",
+    "Public Health",
+    "Mental Health",
+    "Healthcare Policy",
+    "Medical Research",
+    "Pandemics",
+    "Healthcare Access",
+    "Nutrition"
+  ],
+  "Economy": [
+    "Global Markets",
+    "Trade",
+    "Economic Policy",
+    "Inequality",
+    "Labor Rights",
+    "Financial Systems",
+    "Development",
+    "Sustainable Economy"
+  ],
+  "Culture": [
+    "Arts",
+    "Media",
+    "Heritage",
+    "Religion",
+    "Cultural Exchange",
+    "Indigenous Culture",
+    "Language",
+    "Cultural Preservation"
+  ],
+  "Science": [
+    "Scientific Research",
+    "Space Exploration",
+    "Medicine",
+    "Biology",
+    "Physics",
+    "Chemistry",
+    "Technological Innovation",
+    "Scientific Policy"
+  ],
+  "Environment": [
+    "Conservation",
+    "Biodiversity",
+    "Pollution",
+    "Sustainability",
+    "Oceans",
+    "Forests",
+    "Wildlife Protection",
+    "Environmental Policy"
+  ],
+  "Education": [
+    "Educational Policy",
+    "Higher Education",
+    "Primary Education",
+    "Educational Technology",
+    "Global Education",
+    "Access to Education",
+    "Educational Inequality",
+    "Educational Reform"
+  ]
+};
 
 export const regions = [
   "Global",
