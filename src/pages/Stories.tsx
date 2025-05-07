@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
@@ -314,26 +315,28 @@ const Stories = () => {
           {filteredStories.length > 0 ? (
             <Grid container spacing={3}>
               {filteredStories.map((story) => (
-                <Grid key={story.id} sx={{ width: { xs: '100%', sm: '50%', md: '33.33%' } }}>
-                  <Link 
-                    to={`/stories/${story.id}`}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    <StoryCard
-                      id={story.id}
-                      title={story.title}
-                      excerpt={story.excerpt}
-                      coverImage={story.coverImage}
-                      author={story.author}
-                      publishedAt={story.publishedAt}
-                      category={story.category}
-                      region={story.region}
-                      readTime={story.readTime}
-                      commentsCount={story.commentsCount}
-                      likesCount={story.likesCount}
-                      viewsCount={story.viewsCount}
-                    />
-                  </Link>
+                <Grid key={story.id}>
+                  <Box sx={{ width: { xs: '100%', sm: '50%', md: '33.33%' } }}>
+                    <Link 
+                      to={`/stories/${story.id}`}
+                      style={{ textDecoration: 'none' }}
+                    >
+                      <StoryCard
+                        id={story.id}
+                        title={story.title}
+                        excerpt={story.excerpt}
+                        coverImage={story.coverImage}
+                        author={story.author}
+                        publishedAt={story.publishedAt}
+                        category={story.category}
+                        region={story.region}
+                        readTime={story.readTime}
+                        commentsCount={story.commentsCount}
+                        likesCount={story.likesCount}
+                        viewsCount={story.viewsCount}
+                      />
+                    </Link>
+                  </Box>
                 </Grid>
               ))}
             </Grid>

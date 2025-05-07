@@ -94,7 +94,14 @@ const theme = createTheme({
         },
       },
     },
-    // Removed the invalid MuiGrid configuration
+    // Grid component customization compatible with MUI v7
+    MuiGrid: {
+      styleOverrides: {
+        root: {
+          // Any global Grid styles can go here
+        }
+      }
+    }
   },
 });
 
