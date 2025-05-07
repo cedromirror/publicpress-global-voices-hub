@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -43,6 +42,10 @@ const CategoriesNav = ({
     region.toLowerCase().includes(regionSearch.toLowerCase()) && !continents.includes(region)
   );
 
+  const handleViewModeChange = (value: string) => {
+    setViewMode(value as 'simple' | 'detailed');
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
       <Card>
@@ -52,24 +55,24 @@ const CategoriesNav = ({
             <h3 className="text-lg font-semibold">News Categories</h3>
           </div>
           <div className="flex items-center gap-1">
-            <TabsList className="h-8">
-              <TabsTrigger
-                value="simple"
-                className={`h-8 px-3 ${viewMode === 'simple' ? 'bg-blue-100' : ''}`}
-                onClick={() => setViewMode('simple')}
-              >
-                <ListOrdered className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Simple</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="detailed"
-                className={`h-8 px-3 ${viewMode === 'detailed' ? 'bg-blue-100' : ''}`}
-                onClick={() => setViewMode('detailed')}
-              >
-                <Grid3X3 className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">Detailed</span>
-              </TabsTrigger>
-            </TabsList>
+            <Tabs value={viewMode} onValueChange={handleViewModeChange}>
+              <TabsList className="h-8">
+                <TabsTrigger
+                  value="simple"
+                  className="h-8 px-3"
+                >
+                  <ListOrdered className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Simple</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="detailed"
+                  className="h-8 px-3"
+                >
+                  <Grid3X3 className="h-4 w-4 mr-1" />
+                  <span className="hidden sm:inline">Detailed</span>
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
         </div>
         <CardContent className="p-4">
