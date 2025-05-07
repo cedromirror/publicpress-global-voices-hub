@@ -1,4 +1,3 @@
-
 export const featuredStories = [
   {
     id: "1",
@@ -125,13 +124,60 @@ export const topCategories = [
 
 export const regions = [
   "Global",
-  "North America",
-  "Europe",
-  "Asia",
+  // Continents
   "Africa",
+  "Asia",
+  "Europe",
+  "North America",
   "South America",
+  "Oceania",
   "Middle East",
-  "Oceania"
+  // Major Countries by Continent
+  // Africa
+  "Nigeria",
+  "South Africa",
+  "Egypt",
+  "Kenya",
+  "Ethiopia",
+  // Asia
+  "China",
+  "India",
+  "Japan",
+  "South Korea",
+  "Indonesia",
+  "Vietnam",
+  "Thailand",
+  "Philippines",
+  // Europe
+  "United Kingdom",
+  "Germany",
+  "France",
+  "Italy",
+  "Spain",
+  "Russia",
+  "Ukraine",
+  "Poland",
+  "Netherlands",
+  "Sweden",
+  // North America
+  "United States",
+  "Canada",
+  "Mexico",
+  // South America
+  "Brazil",
+  "Argentina",
+  "Colombia",
+  "Chile",
+  "Peru",
+  // Oceania
+  "Australia",
+  "New Zealand",
+  // Middle East
+  "Saudi Arabia",
+  "UAE",
+  "Israel",
+  "Turkey",
+  "Iran"
 ];
 
 export const journalists = [
