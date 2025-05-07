@@ -1,15 +1,19 @@
 
 import React from 'react';
 import { Button } from "@/components/ui/button";
-import { Globe, ChevronRight } from "lucide-react";
+import { Globe, ChevronRight, Volume2, Newspaper } from "lucide-react";
+import { motion } from "framer-motion";
 
 const Hero = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-pp-navy to-pp-blue text-white py-20 md:py-32">
-      {/* Background pattern */}
+    <section className="relative overflow-hidden py-20 md:py-32">
+      {/* Modern gradient background */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-pp-navy via-[#1E5F8C] to-pp-blue"></div>
+      
+      {/* Animated patterns */}
       <div className="absolute inset-0 z-0 opacity-10">
         <div className="absolute h-full w-full">
-          {Array.from({ length: 40 }).map((_, i) => (
+          {Array.from({ length: 30 }).map((_, i) => (
             <Globe 
               key={i} 
               className="absolute text-white" 
@@ -24,26 +28,73 @@ const Hero = () => {
         </div>
       </div>
       
-      <div className="container relative z-10 mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 font-playfair">
-          Empowering Journalists. <br className="hidden md:block" />
-          <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
-            Amplifying Global Voices.
-          </span>
-        </h1>
-        
-        <p className="text-lg md:text-xl max-w-2xl mx-auto mb-8 text-gray-200">
-          The next-generation publishing platform where independent journalists create, share, and monetize impactful stories with powerful multimedia tools.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <Button size="lg" className="bg-white text-pp-navy hover:bg-gray-100 px-6">
-            Start Publishing
-          </Button>
+      <div className="container relative z-10 mx-auto px-4">
+        <div className="flex flex-col md:flex-row items-center">
+          <div className="md:w-1/2 text-white text-center md:text-left mb-10 md:mb-0">
+            <div className="inline-flex items-center mb-4 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20">
+              <Newspaper className="h-4 w-4 mr-2 text-pp-red" />
+              <span className="text-sm font-medium">Global News Network</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6 font-playfair">
+              <span className="block">Empowering</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-300">
+                Global Voices
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl max-w-xl mb-8 text-gray-200">
+              The next-generation publishing platform where independent journalists create, share, and monetize 
+              impactful stories with powerful multimedia tools.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+              <Button size="lg" className="bg-white text-pp-navy hover:bg-gray-100 px-6 shadow-lg">
+                Start Publishing
+              </Button>
+              
+              <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 px-6 gap-2">
+                <Volume2 className="h-5 w-5" />
+                Global Voices
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
           
-          <Button size="lg" variant="outline" className="text-white border-white hover:bg-white/10 px-6">
-            Explore Stories <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
+          {/* Modern 3D Globe Illustration */}
+          <div className="md:w-1/2 flex justify-center md:justify-end">
+            <div className="relative w-64 h-64 md:w-96 md:h-96">
+              {/* Stylized globe visualization */}
+              <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-500/30 to-blue-700/50 backdrop-blur-xl border border-white/20 shadow-[0_0_40px_rgba(59,130,246,0.3)]"></div>
+              <div className="absolute inset-4 rounded-full bg-gradient-to-tl from-blue-900/40 via-transparent to-blue-300/30 backdrop-blur-sm"></div>
+              
+              {/* News points on globe */}
+              <div className="absolute h-3 w-3 rounded-full bg-pp-red top-[30%] left-[20%] shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
+              <div className="absolute h-2 w-2 rounded-full bg-pp-red top-[60%] left-[70%] shadow-[0_0_8px_rgba(220,38,38,0.7)]"></div>
+              <div className="absolute h-2 w-2 rounded-full bg-pp-red top-[20%] left-[60%] shadow-[0_0_8px_rgba(220,38,38,0.7)]"></div>
+              <div className="absolute h-4 w-4 rounded-full bg-pp-red top-[45%] left-[35%] shadow-[0_0_12px_rgba(220,38,38,0.9)]"></div>
+              
+              {/* Longitude/Latitude lines */}
+              <div className="absolute inset-0 rounded-full border-2 border-white/10"></div>
+              <div className="absolute inset-0 rounded-full border-2 border-white/5" style={{transform: 'rotateX(60deg)'}}></div>
+              <div className="absolute inset-0 rounded-full border-2 border-white/5" style={{transform: 'rotateY(60deg)'}}></div>
+              
+              {/* Globe overlay */}
+              <Globe className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-white/50 h-24 w-24" />
+            </div>
+          </div>
+        </div>
+        
+        {/* Floating news tags */}
+        <div className="mt-8 md:mt-16 flex flex-wrap justify-center gap-4">
+          {["Politics", "Environment", "Technology", "Health", "Economy"].map((tag) => (
+            <div 
+              key={tag}
+              className="px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm border border-white/20 hover:bg-white/20 transition-all cursor-pointer"
+            >
+              {tag}
+            </div>
+          ))}
         </div>
       </div>
     </section>
