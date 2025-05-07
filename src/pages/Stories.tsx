@@ -1,15 +1,16 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import StoryCard from '@/components/stories/StoryCard';
+import CategoriesNav from '@/components/stories/CategoriesNav';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { featuredStories, regions, topCategories } from '@/lib/data';
-import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle } from 'lucide-react';
+import { Filter, Search, SortAsc, SortDesc, Calendar, TrendingUp, MessageCircle, Globe } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -25,11 +26,31 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 const Stories = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeRegion, setActiveRegion] = useState('All');
-  const [activeCategory, setActiveCategory] = useState('All');
+  const [activeRegion, setActiveRegion] = useState(queryParams.get('region') || 'All');
+  const [activeCategory, setActiveCategory] = useState(queryParams.get('category') || 'All');
   const [sortBy, setSortBy] = useState<string>("popular"); // popular, newest, mostCommented
   const [isAscending, setIsAscending] = useState(false);
+  
+  // Update URL when filters change
+  useEffect(() => {
+    const params = new URLSearchParams();
+    
+    if (activeRegion !== 'All') {
+      params.set('region', activeRegion);
+    }
+    
+    if (activeCategory !== 'All') {
+      params.set('category', activeCategory);
+    }
+    
+    const newUrl = params.toString() ? `?${params.toString()}` : '';
+    navigate(`/stories${newUrl}`, { replace: true });
+  }, [activeRegion, activeCategory, navigate]);
   
   // Sort stories based on current sorting options
   const sortStories = (stories: any[]) => {
@@ -173,57 +194,44 @@ const Stories = () => {
               </div>
             </div>
             
-            <Tabs defaultValue="categories" className="w-full">
-              <TabsList className="mb-4 w-full md:w-auto">
-                <TabsTrigger value="categories">Categories</TabsTrigger>
-                <TabsTrigger value="regions">Regions</TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="categories" className="mt-0">
-                <div className="flex flex-wrap gap-2">
-                  <Badge 
-                    className={`cursor-pointer ${activeCategory === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                    onClick={() => setActiveCategory('All')}
-                  >
-                    All
-                  </Badge>
-                  {topCategories.slice(0, 8).map((category) => (
-                    <Badge 
-                      key={category}
-                      className={`cursor-pointer ${activeCategory === category ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                      onClick={() => setActiveCategory(category)}
-                    >
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
-              </TabsContent>
-              
-              <TabsContent value="regions" className="mt-0">
-                <div className="flex flex-wrap gap-2">
-                  <Badge 
-                    className={`cursor-pointer ${activeRegion === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                    onClick={() => setActiveRegion('All')}
-                  >
-                    All
-                  </Badge>
-                  {regions.map((region) => (
-                    <Badge 
-                      key={region}
-                      className={`cursor-pointer ${activeRegion === region ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                      onClick={() => setActiveRegion(region)}
-                    >
-                      {region}
-                    </Badge>
-                  ))}
-                </div>
-              </TabsContent>
-            </Tabs>
+            {/* Categories and Regions Navigation */}
+            <CategoriesNav 
+              activeCategory={activeCategory}
+              activeRegion={activeRegion}
+              setActiveCategory={setActiveCategory}
+              setActiveRegion={setActiveRegion}
+            />
             
             <div className="flex justify-between items-center text-sm text-muted-foreground">
               <span>
                 {filteredStories.length} {filteredStories.length === 1 ? 'story' : 'stories'} found
               </span>
+              {(activeCategory !== 'All' || activeRegion !== 'All') && (
+                <div className="flex items-center gap-2">
+                  {activeCategory !== 'All' && (
+                    <Badge variant="outline" className="bg-blue-50">
+                      Category: {activeCategory}
+                      <button 
+                        className="ml-1 text-muted hover:text-foreground" 
+                        onClick={() => setActiveCategory('All')}
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  )}
+                  {activeRegion !== 'All' && (
+                    <Badge variant="outline" className="bg-green-50">
+                      Region: {activeRegion}
+                      <button 
+                        className="ml-1 text-muted hover:text-foreground" 
+                        onClick={() => setActiveRegion('All')}
+                      >
+                        ×
+                      </button>
+                    </Badge>
+                  )}
+                </div>
+              )}
             </div>
           </div>
           
