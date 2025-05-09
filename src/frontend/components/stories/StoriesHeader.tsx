@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Box } from '@mui/material';
-import SearchBar from '../../components/search/SearchBar';
+import SearchBar from '@/components/search/SearchBar';
 
 interface StoriesHeaderProps {
   onSearch: (term: string) => void;

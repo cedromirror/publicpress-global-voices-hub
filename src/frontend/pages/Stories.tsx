@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
@@ -8,21 +8,19 @@ import { Box } from '@mui/material';
 import { regions } from '@/lib/data';
 import { useStoriesFilter } from '@/hooks/use-stories-filter';
 import { useToast } from '@/hooks/use-toast';
-import { useQuery } from '@tanstack/react-query';
+import { useStoriesService } from '@/frontend/hooks/use-stories-service';
 
 // Import our components
-import StoriesHeader from '../components/stories/StoriesHeader';
+import StoriesHeader from '@/frontend/components/stories/StoriesHeader';
 import FilterBar from '@/components/stories/FilterBar';
 import ActiveFiltersDisplay from '@/components/stories/ActiveFiltersDisplay';
 import StoriesList from '@/components/stories/StoriesList';
-import RegionsSidebar from '../components/stories/RegionsSidebar';
-
-// Import backend service
-import { getFilteredStories } from '../../backend/services/storiesService';
+import RegionsSidebar from '@/frontend/components/stories/RegionsSidebar';
 
 const Stories = () => {
   const { toast } = useToast();
   const location = useLocation();
+  const [filteredStories, setFilteredStories] = useState([]);
 
   const {
     searchTerm,
@@ -37,24 +35,23 @@ const Stories = () => {
     setIsAscending,
     mainCategory,
     subcategory,
-    filteredStories,
-    setFilteredStories,
     resetFilters,
     updateQueryParams
   } = useStoriesFilter([]);
 
   // Use React Query to fetch and filter stories
-  const { data: stories, isLoading, error } = useQuery({
-    queryKey: ['stories', searchTerm, activeCategory, activeRegion, sortBy, isAscending],
-    queryFn: () => getFilteredStories({
-      searchTerm,
-      category: activeCategory !== 'All' ? activeCategory : undefined,
-      region: activeRegion !== 'All' ? activeRegion : undefined,
-      sortBy,
-      isAscending
-    }),
-    onSuccess: (data) => {
-      setFilteredStories(data);
+  const { data: stories, isLoading, error } = useStoriesService({
+    searchTerm,
+    category: activeCategory !== 'All' ? activeCategory : undefined,
+    region: activeRegion !== 'All' ? activeRegion : undefined,
+    sortBy,
+    isAscending
+  });
+
+  // Update filtered stories when data changes
+  useEffect(() => {
+    if (stories) {
+      setFilteredStories(stories);
       
       // Show toast notification when filtering by region
       const params = new URLSearchParams(location.search);
@@ -62,11 +59,11 @@ const Stories = () => {
       if (regionParam && activeRegion === regionParam) {
         toast({
           title: `Showing stories from ${regionParam}`,
-          description: `${data.length} stories found in this region`,
+          description: `${stories.length} stories found in this region`,
         });
       }
     }
-  });
+  }, [stories, activeRegion, location.search, toast]);
 
   // Get trending stories for the sidebar
   const trendingStories = stories
