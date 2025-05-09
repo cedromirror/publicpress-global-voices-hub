@@ -50,26 +50,28 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories, resetFilters }) => {
   return (
     <Grid container spacing={3}>
       {stories.map((story) => (
-        <Grid key={story.id} item xs={12} sm={6} md={4}>
-          <Link 
-            to={`/stories/${story.id}`}
-            style={{ textDecoration: 'none' }}
-          >
-            <StoryCard
-              id={story.id}
-              title={story.title}
-              excerpt={story.excerpt}
-              coverImage={story.coverImage}
-              author={story.author}
-              publishedAt={story.publishedAt}
-              category={story.category}
-              region={story.region}
-              readTime={story.readTime}
-              commentsCount={story.commentsCount}
-              likesCount={story.likesCount}
-              viewsCount={story.viewsCount}
-            />
-          </Link>
+        <Grid item xs={12} sm={6} md={4} key={story.id}>
+          <Box>
+            <Link 
+              to={`/stories/${story.id}`}
+              style={{ textDecoration: 'none' }}
+            >
+              <StoryCard
+                id={story.id}
+                title={story.title}
+                excerpt={story.excerpt}
+                coverImage={story.coverImage}
+                author={story.author}
+                publishedAt={story.publishedAt}
+                category={story.category}
+                region={story.region}
+                readTime={story.readTime}
+                commentsCount={story.commentsCount}
+                likesCount={story.likesCount}
+                viewsCount={story.viewsCount}
+              />
+            </Link>
+          </Box>
         </Grid>
       ))}
     </Grid>
