@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Badge } from "@/components/ui/badge";
 import { 
   MessageCircle, 
@@ -50,6 +50,7 @@ const StoryCard: React.FC<StoryCardProps> = ({
   featured = false
 }) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [likes, setLikes] = useState(likesCount);
   const [dislikes, setDislikes] = useState(0);
   const [hasLiked, setHasLiked] = useState(false);
@@ -121,6 +122,16 @@ const StoryCard: React.FC<StoryCardProps> = ({
     });
   };
 
+  const handleRegionClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    navigate(`/stories?region=${encodeURIComponent(region)}`);
+    toast({
+      title: `Filtering by ${region}`,
+      description: `Showing stories from ${region}`,
+    });
+  };
+
   return (
     <div className={`story-card bg-white rounded-lg shadow-card overflow-hidden border border-gray-100 h-full flex flex-col ${featured ? 'border-pp-blue/30 shadow-lg' : ''}`}>
       <div className="relative h-52 overflow-hidden">
@@ -170,7 +181,10 @@ const StoryCard: React.FC<StoryCardProps> = ({
             {readTime} min read
           </span>
           <span>•</span>
-          <span className="flex items-center gap-1">
+          <span 
+            className="flex items-center gap-1 cursor-pointer hover:text-pp-blue transition-colors"
+            onClick={handleRegionClick}
+          >
             <Globe className="h-3 w-3" />
             {region}
           </span>

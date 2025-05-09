@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Globe, BookOpen, Search, ChevronDown, Grid3X3, ListOrdered, FolderOpen } from 'lucide-react';
@@ -7,6 +7,7 @@ import { regions, topCategories, categoriesWithSubcategories } from '@/lib/data'
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useToast } from '@/hooks/use-toast';
 import {
   Accordion,
   AccordionContent,
@@ -33,6 +34,8 @@ const CategoriesNav = ({
   setActiveCategory,
   setActiveRegion,
 }: CategoriesNavProps) => {
+  const { toast } = useToast();
+  const navigate = useNavigate();
   const [regionSearch, setRegionSearch] = useState('');
   const [viewMode, setViewMode] = useState<'simple' | 'detailed'>('simple');
   const continents = ["Africa", "Asia", "Europe", "North America", "South America", "Oceania", "Middle East"];
@@ -44,6 +47,26 @@ const CategoriesNav = ({
 
   const handleViewModeChange = (value: string) => {
     setViewMode(value as 'simple' | 'detailed');
+  };
+
+  const handleRegionClick = (region: string) => {
+    setActiveRegion(region);
+    if (region !== 'All') {
+      toast({
+        title: `Filtering by ${region}`,
+        description: `Showing stories from ${region}`,
+      });
+    }
+  };
+
+  const handleCategoryClick = (category: string) => {
+    setActiveCategory(category);
+    if (category !== 'All') {
+      toast({
+        title: `Filtering by ${category}`,
+        description: `Showing stories in ${category}`,
+      });
+    }
   };
 
   return (
@@ -80,7 +103,7 @@ const CategoriesNav = ({
             <div className="flex flex-wrap gap-2">
               <Badge 
                 className={`cursor-pointer ${activeCategory === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                onClick={() => setActiveCategory('All')}
+                onClick={() => handleCategoryClick('All')}
               >
                 All
               </Badge>
@@ -88,7 +111,7 @@ const CategoriesNav = ({
                 <Badge 
                   key={category}
                   className={`cursor-pointer ${activeCategory === category ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => handleCategoryClick(category)}
                 >
                   {category}
                 </Badge>
@@ -101,7 +124,7 @@ const CategoriesNav = ({
                   <div className="flex items-center">
                     <Badge 
                       className={`cursor-pointer my-2 ${activeCategory === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                      onClick={() => setActiveCategory('All')}
+                      onClick={() => handleCategoryClick('All')}
                     >
                       All Categories
                     </Badge>
@@ -112,7 +135,7 @@ const CategoriesNav = ({
                     <AccordionTrigger className="hover:no-underline">
                       <Badge 
                         className={`cursor-pointer ${activeCategory === category ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                        onClick={() => setActiveCategory(category)}
+                        onClick={() => handleCategoryClick(category)}
                       >
                         {category}
                       </Badge>
@@ -124,7 +147,7 @@ const CategoriesNav = ({
                             key={subcategory} 
                             variant="outline"
                             className="cursor-pointer bg-blue-50 hover:bg-blue-100"
-                            onClick={() => setActiveCategory(`${category}: ${subcategory}`)}
+                            onClick={() => handleCategoryClick(`${category}: ${subcategory}`)}
                           >
                             {subcategory}
                           </Badge>
@@ -157,26 +180,31 @@ const CategoriesNav = ({
           <div>
             <h4 className="text-sm font-medium mb-2">Popular Regions</h4>
             <div className="flex flex-wrap gap-2 mb-3">
-              <Badge 
-                className={`cursor-pointer ${activeRegion === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                onClick={() => setActiveRegion('All')}
-              >
-                All
-              </Badge>
-              <Badge 
-                className={`cursor-pointer ${activeRegion === 'Global' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                onClick={() => setActiveRegion('Global')}
-              >
-                Global
-              </Badge>
-              {continents.map((region) => (
+              <Link to="/stories" className="no-underline">
                 <Badge 
-                  key={region}
-                  className={`cursor-pointer ${activeRegion === region ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                  onClick={() => setActiveRegion(region)}
+                  className={`cursor-pointer ${activeRegion === 'All' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                  onClick={() => handleRegionClick('All')}
                 >
-                  {region}
+                  All
                 </Badge>
+              </Link>
+              <Link to="/stories?region=Global" className="no-underline">
+                <Badge 
+                  className={`cursor-pointer ${activeRegion === 'Global' ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                  onClick={() => handleRegionClick('Global')}
+                >
+                  Global
+                </Badge>
+              </Link>
+              {continents.map((region) => (
+                <Link key={region} to={`/stories?region=${encodeURIComponent(region)}`} className="no-underline">
+                  <Badge 
+                    className={`cursor-pointer ${activeRegion === region ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                    onClick={() => handleRegionClick(region)}
+                  >
+                    {region}
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>
@@ -188,13 +216,14 @@ const CategoriesNav = ({
                 <div className="flex flex-wrap gap-2">
                   {filteredRegions.length > 0 ? (
                     filteredRegions.map((region) => (
-                      <Badge 
-                        key={region}
-                        className={`cursor-pointer ${activeRegion === region ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                        onClick={() => setActiveRegion(region)}
-                      >
-                        {region}
-                      </Badge>
+                      <Link key={region} to={`/stories?region=${encodeURIComponent(region)}`} className="no-underline">
+                        <Badge 
+                          className={`cursor-pointer ${activeRegion === region ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                          onClick={() => handleRegionClick(region)}
+                        >
+                          {region}
+                        </Badge>
+                      </Link>
                     ))
                   ) : (
                     <p className="text-sm text-muted-foreground">No countries found</p>
@@ -270,13 +299,14 @@ const CategoriesNav = ({
                       <AccordionContent>
                         <div className="flex flex-wrap gap-2 max-h-[150px] overflow-y-auto p-2">
                           {countriesInContinent.map(country => (
-                            <Badge
-                              key={country}
-                              className={`cursor-pointer ${activeRegion === country ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
-                              onClick={() => setActiveRegion(country)}
-                            >
-                              {country}
-                            </Badge>
+                            <Link key={country} to={`/stories?region=${encodeURIComponent(country)}`} className="no-underline">
+                              <Badge
+                                className={`cursor-pointer ${activeRegion === country ? 'bg-pp-blue' : 'bg-secondary text-foreground hover:bg-muted'}`}
+                                onClick={() => handleRegionClick(country)}
+                              >
+                                {country}
+                              </Badge>
+                            </Link>
                           ))}
                         </div>
                       </AccordionContent>

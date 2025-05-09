@@ -404,15 +404,19 @@ const Stories = () => {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {regions.map((region) => (
-                    <Chip 
-                      key={region}
-                      label={region}
-                      onClick={() => setActiveRegion(region)}
-                      variant={activeRegion === region ? "filled" : "outlined"}
-                      color="primary"
-                      size="small"
-                      className="cursor-pointer"
-                    />
+                    <Link 
+                      key={region} 
+                      to={`/stories?region=${encodeURIComponent(region)}`}
+                      className="no-underline"
+                    >
+                      <Chip 
+                        label={region}
+                        variant={activeRegion === region ? "filled" : "outlined"}
+                        color="primary"
+                        size="small"
+                        className="cursor-pointer"
+                      />
+                    </Link>
                   ))}
                 </div>
               </div>
