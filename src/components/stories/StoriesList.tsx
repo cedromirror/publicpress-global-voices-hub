@@ -50,7 +50,7 @@ const StoriesList: React.FC<StoriesListProps> = ({ stories, resetFilters }) => {
   return (
     <Grid container spacing={3}>
       {stories.map((story) => (
-        <Grid item xs={12} sm={6} md={4} key={story.id}>
+        <Grid key={story.id} xs={12} sm={6} md={4}>
           <Box>
             <Link 
               to={`/stories/${story.id}`}
